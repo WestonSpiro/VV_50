@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+#The Vocabulary_Vindicator
+#Import Necessary Modules
+import numpy as np
+import nltk
+import string
+import matplotlib.pyplot as plt
+from nltk.probability import FreqDist
+from nltk.corpus import stopwords
+from collections import Counter
+from wordcloud import WordCloud
+#Stop Words Initialization & User Input
+stop_words = set(stopwords.words("english"))
+print("Welcome to The Vocabulary_Vindicator")
+filename = input("Please enter file name: ")
+fn = open(filename, "r")
+#Punctuation Removal
+str_fn = fn.read()
+str_fn = str_fn.translate(str.maketrans('', '', string.punctuation))
+str_fn = str_fn.lower()
+str_fn = str_fn.replace(",", "")
+str_fn = str_fn.replace("'", "")
+token = nltk.word_tokenize(str_fn)
+#Word Count
+word_count = 0
+filtered_tokens = []
+for w in token:
+    word_count += 1
+    if w not in stop_words:
+        filtered_tokens.append(w)
+print("Word Count: " + str(word_count))
+#Frequency Calculatioin & File Creation
+fdist = FreqDist(token)
+print(fdist.most_common(50))
+fdist.plot(50, cumulative=False)
+word_frequency = open("VV_50_Text.txt", "x")
+word_frequency.write("Vocabulary Vindicator: " + filename)
+word_frequency.write("\n")
+word_frequency.write("50 Most Common Words: ")
+word_frequency.write("\n")
+word_frequency.write(str(fdist.most_common(50)))
+word_frequency.write("\n")
+word_frequency.write("Thank You For Using The Vocabulary Vindicator!")
+word_frequency.close()
+plt.show()
+#Wordcloud Generation:
+dictionary = Counter(filtered_tokens)
+cloud = WordCloud(max_font_size=120,colormap='hsv').generate_from_frequencies(dictionary)
+plt.figure(figsize=(32,24))
+plt.imshow(cloud, interpolation='bilinear')
+plt.axis('off')
+plt.show()
+cloud = cloud.to_file('VV_50_Cloud.png')
